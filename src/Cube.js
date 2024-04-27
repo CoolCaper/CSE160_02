@@ -1,4 +1,4 @@
-// Fragment shader program
+//draw cube class
 
 class Cube {
     constructor(color=[1.0,1.0,1.0,1.0], size=5.0,position=[]){
@@ -8,89 +8,105 @@ class Cube {
       this.position = position;
       this.vertices = this.initVertexArray()
       this.matrix = new Matrix4()
-      //console.log("Aren't I getting the identity matrix?")
-      //console.log(this.matrix.elements)
+      this.drawMatrix = new Matrix4()
     }
 
     initVertexArray(){
-        let vertices = [];
-        
+        let vertices = [
+            -0.5, -0.5, -0.5, 
+            0.5, -0.5, -0.5,
+            0.5,  0.5, -0.5,
+            0.5,  0.5, -0.5,
+            -0.5,  0.5, -0.5,
+            -0.5, -0.5, -0.5,
+
+            -0.5, -0.5,  0.5,
+            0.5, -0.5,  0.5,
+            0.5,  0.5,  0.5,
+            0.5,  0.5,  0.5,
+            -0.5,  0.5,  0.5,
+            -0.5, -0.5,  0.5,
+
+            -0.5,  0.5,  0.5,
+            -0.5,  0.5, -0.5,
+            -0.5, -0.5, -0.5,
+            -0.5, -0.5, -0.5,
+            -0.5, -0.5,  0.5,
+            -0.5,  0.5,  0.5,
+
+            0.5,  0.5,  0.5,
+            0.5,  0.5, -0.5,
+            0.5, -0.5, -0.5,
+            0.5, -0.5, -0.5,
+            0.5, -0.5,  0.5,
+            0.5,  0.5,  0.5,
+
+            -0.5, -0.5, -0.5,
+            0.5, -0.5, -0.5,
+            0.5, -0.5,  0.5,
+            0.5, -0.5,  0.5,
+            -0.5, -0.5,  0.5,
+            -0.5, -0.5, -0.5,
+
+            -0.5,  0.5, -0.5,
+            0.5,  0.5, -0.5,
+            0.5,  0.5,  0.5,
+            0.5,  0.5,  0.5,
+            -0.5,  0.5,  0.5,
+            -0.5,  0.5, -0.5
+        ];
         
 
         return vertices;
     }
+
     identity() { //resets to identity matrix
         this.matrix.elements = new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
     }
 
     drawTriangleIn3D(vertices) {
-        var n = 3
+        var n = vertices.length / 3;
         // Create a buffer object
         var vertexBuffer = gl.createBuffer();
         if (!vertexBuffer) {
         console.log('Failed to create the buffer object');
         return -1;
         }
-        var rgba = this.color
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-        // Pass the size of a point to u_Size variable
-        //gl.uniform1f(u_Size, 5.0);
-        // Bind the buffer object to target
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        // Write date into the buffer object
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+
         var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
         if (a_Position < 0) {
            console.log('Failed to get the storage location of a_Position');
            return -1;
          }
+        
+        var rgba = this.color
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+        // Pass the size of a point to u_Size variable
+        gl.uniform1f(u_Size, 5.0);
+
+        // Bind the buffer object to target
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        
+        // Write date into the buffer object
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+
         // Assign the buffer object to a_Position variable
         gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
     
         // Enable the assignment to a_Position variable
         gl.enableVertexAttribArray(a_Position);
         
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.drawArrays(gl.TRIANGLES, 0, n);
     
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     
     }
-    
-  
-  
+
     render() {
-        var rgba = this.color;    
-        // Pass the color of a point to u_FragColor variable
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        this.drawFace();
-        this.matrix.rotate(90, 1, 0, 0)
-        this.drawFace();
-        this.matrix.rotate(90, 0, 1, 0)
-        this.drawFace();
-        this.matrix.rotate(270, 1, 0, 0)
-        this.matrix.rotate(90, 0, 1, 0)
-        this.matrix.translate(-1, -1, 1)
-        this.drawFace();
-        this.matrix.rotate(90, 0, 1, 0)
-        this.drawFace();
-        this.matrix.translate(0, -1, 0)
-        this.matrix.rotate(90, 1, 0, 0)        
-        this.matrix.translate(0, 1, -1)
-        this.matrix.rotate(90, 1, 0, 0)
-        this.matrix.rotate(90, 1, 0, 0)
-        this.drawFace();
+        this.drawTriangleIn3D(this.vertices);
     }
 
-    drawFace() {        
-        this.drawTriangleIn3D([
-            0.0, 0.0, 0.0, 
-            1.0, 1.0, 0.0,
-            1.0, 0.0, 0.0])
-        this.drawTriangleIn3D([
-            0.0, 0.0, 0.0, 
-            0.0, 1.0, 0.0, 
-            1.0, 1.0, 0.0])      
-    }
 }
   

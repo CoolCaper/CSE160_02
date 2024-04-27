@@ -112,44 +112,26 @@ function connectVariablesToGLSL() {
 }
 
 function addActionsforHTMLUI() {
-
+  document.getElementById("rot_camX").value = 0;
   document.getElementById("rot_camX").addEventListener("mousemove", function (event) {
     if (event.buttons == 1) {
       radiansX = this.value;
-      xVec = 1;
-      YVec = 0;
-      ZVec = 0
-      renderScene();
     }
   })
 
-  document.getElementById("rot_camX").addEventListener("click", function (event) {
-      radiansX = this.value;
-      xVec = 1;
-      YVec = 0;
-      ZVec = 0
-      renderScene();
-  })
-
-
+  document.getElementById("rot_camY").value = 0;
   document.getElementById("rot_camY").addEventListener("mousemove", function (event) {
     if (event.buttons == 1) {
       radiansY = this.value;
-      xVec = 0;
-      YVec = 1;
-      ZVec = 0
     }
-    renderScene();
   })
 
-  document.getElementById("rot_camY").addEventListener("click", function (event) {
-    radiansY = this.value;
-    xVec = 0;
-    YVec = 1;
-    ZVec = 0
-    renderScene();
+  document.getElementById("rot_camZ").value = 0;
+  document.getElementById("rot_camZ").addEventListener("mousemove", function (event) {
+    if (event.buttons == 1) {
+      radiansZ = this.value;
+    }
   })
-
 
 
   document.getElementById("yellow_rot").addEventListener("mousemove", function (event) {
@@ -162,6 +144,7 @@ function addActionsforHTMLUI() {
     }
   }
   )
+
 
 
   document.getElementById("yellow_rot").addEventListener("click", function (event) {
@@ -185,22 +168,7 @@ function addActionsforHTMLUI() {
     pink_rot = this.value;
     renderScene()
   })
-  document.getElementById("rot_camZ").addEventListener("mousemove", function (event) {
-    if (event.buttons == 1) {
-      radiansZ = this.value;
-      xVec = 0;
-      YVec = 0;
-      ZVec = 1;
-      renderScene();
-    }
-  })
-  document.getElementById("rot_camZ").addEventListener("click", function (event) {
-    radiansZ = this.value;
-    xVec = 0;
-    YVec = 0;
-    ZVec = 1;
-    renderScene();
-  })
+
 
 
   document.getElementById("on").addEventListener("click", function (event) { 
@@ -212,51 +180,80 @@ function addActionsforHTMLUI() {
     animation_on = false;
   })
 }
-function renderScene() {
-  //global matrix set up
-  let globalRotateMatrix = new Matrix4(); //You HAVE to declare this variable in the render function or else your rotation will be crazy inconsistent.
-  gl.uniformMatrix4fv(u_globalRotateMatrix, false, globalRotateMatrix.elements);
-  //clear canvas  
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  globalRotateMatrix.rotate(radiansX, 1, 0, 0);
-  globalRotateMatrix.rotate(radiansY, 0, 1, 0);
-  globalRotateMatrix.rotate(radiansZ, 0, 0, 1);
-  //FIRST CUBE
-  var cube_Method = new Cube(
+
+
+let globalRotateMatrix = new Matrix4(); //You HAVE to declare this variable in the render function or else your rotation will be crazy inconsistent.
+let cube_Method;
+let leftArm;
+let box;
+
+function initAnimal(){
+  cube_Method = new Cube(
     color = [1.0, 0.0, 0.0, 1.0]
   );
-  cube_Method.matrix.translate(-.25, -.75, 0.0); 
-  cube_Method.matrix.rotate(-5, 1, 0, 0)
-  cube_Method.matrix.scale(.5, .3, .5);
-  cube_Method.render();
-  //ARM1
+
   leftArm = new Cube(
     color = [1.0, 1.0, 0.0, 1.0]
   );
-  leftArm.matrix.setTranslate(0, -.5, 0.0); 
-  leftArm.matrix.rotate(-5, 1, 0, 0);
+
+  box = new Cube(
+    color = [1.0, 0.0, 1.0, 1.0]
+  );
+}
+
+function renderScene() {
+  //global matrix set up
+  //clear canvas  
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  globalRotateMatrix.setIdentity();
+  globalRotateMatrix.rotate(radiansX, 1, 0, 0);
+  globalRotateMatrix.rotate(radiansY, 0, 1, 0);
+  globalRotateMatrix.rotate(radiansZ, 0, 0, 1);
   
-  g_seconds = (performance.now() / 1000) - (g_startTime)
+  gl.uniformMatrix4fv(u_globalRotateMatrix, false, globalRotateMatrix.elements);
+  //FIRST CUBE
+
+
+  cube_Method.matrix.setIdentity();
+  cube_Method.matrix.translate(0.0, -.75, 0.0); 
+  cube_Method.matrix.rotate(-5, 1, 0, 0)
+  cube_Method.matrix.scale(.5, .3, .5);
+  
+  cube_Method.render();
+  
+  //ARM1
+
+  leftArm.matrix.setIdentity();
+  leftArm.matrix.translate(0, -.5, 0.0); 
+  leftArm.matrix.rotate(-5, 1, 0, 0);
+
   updateAnimationAngles(g_seconds, leftArm, yellow_rot);
   var arm_mat = new Matrix4(leftArm.matrix);
   leftArm.matrix.scale(0.25, .7, .5);
-  leftArm.matrix.translate(-.5, 0, 0);
+  leftArm.matrix.translate(0.0, 0.25, 0);
   leftArm.render();
-  var box = new Cube(
-    color = [1.0, 0.0, 1.0, 1.0]
-  );
-  box.matrix = arm_mat;
+
+  box.matrix.set(arm_mat);
   box.matrix.translate(0, .65, 0); 
   box.matrix.scale(.3, .3, .3); 
-  box.matrix.translate(-.5, 0, .001);
+  box.matrix.translate(0.0, 0, .001);
   updateAnimationAngles(g_seconds, box, pink_rot);
   box.render()
 }
 
+let frames_rendered = 0;
 function tick() {
+  g_seconds = (performance.now() / 1000) - (g_startTime)
   renderScene()
   requestAnimationFrame(tick);
+
+  let duration = performance.now() - start_time;
+  frames_rendered += 1;
+  sendTextToHTML(
+                " ms: " + Math.floor(duration) +
+                " fps: " + Math.floor(1000* frames_rendered/duration), "perf");
 }
 
 function updateAnimationAngles(secs, cube_obj, angle) {   
@@ -271,6 +268,7 @@ function updateAnimationAngles(secs, cube_obj, angle) {
 
 function main() {
   start_time = performance.now();
+  // var performance;
   setupWebGL();
   // Initialize shaders
   connectVariablesToGLSL();
@@ -278,6 +276,17 @@ function main() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  renderScene()  
+  initAnimal();
+  renderScene();
   requestAnimationFrame(tick);
+}
+
+
+function sendTextToHTML(text, htmlID){
+  var htmllm = document.getElementById(htmlID);
+  if (!htmllm){
+    console.log("Failed to get " + htmlID + " from HTML");
+    return;
+  }
+  htmllm.innerHTML = text;
 }
