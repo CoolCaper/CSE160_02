@@ -1,7 +1,6 @@
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 
-const { update } = require("three/examples/jsm/libs/tween.module.js");
 
 //Render List
 var VSHADER_SOURCE =
