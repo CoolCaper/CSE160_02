@@ -1,10 +1,9 @@
 //draw cube class
 
 class Cube {
-    constructor(color=[1.0,1.0,1.0,1.0], size=5.0,position=[]){
+    constructor(color=[1.0,1.0,1.0,1.0],position=[]){
       this.type = 'cube';
       this.color = color;
-      this.size = size;
       this.position = position;
       this.vertices = this.initVertexArray()
       this.matrix = new Matrix4()
@@ -84,11 +83,10 @@ class Cube {
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
         // Pass the size of a point to u_Size variable
-        gl.uniform1f(u_Size, 5.0);
 
         // Bind the buffer object to target
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        
+
         // Write date into the buffer object
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
 

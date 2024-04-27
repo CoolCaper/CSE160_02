@@ -234,7 +234,7 @@ function renderScene() {
   leftArm.matrix.scale(0.25, .7, .5);
   leftArm.matrix.translate(0.0, 0.25, 0);
   leftArm.render();
-
+  //hand
   box.matrix.set(arm_mat);
   box.matrix.translate(0, .65, 0); 
   box.matrix.scale(.3, .3, .3); 
@@ -277,6 +277,7 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   initAnimal();
+  var limb = new limb([1, 0, 0, 1])
   renderScene();
   requestAnimationFrame(tick);
 }
