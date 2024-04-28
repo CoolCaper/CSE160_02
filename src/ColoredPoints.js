@@ -39,6 +39,10 @@ var ZVec = 0
 let pink_rot = 0;
 let yellow_rot = 0;
 var animation_on = false;
+let leg;
+let leg2;
+let limb;
+let limb2
 
 
 
@@ -50,13 +54,23 @@ var g_seconds;
 g_startTime = performance.now() / 1000;
 g_seconds = (performance.now() / 1000) - (g_startTime)
 
+
+let globalRotateMatrix = new Matrix4(); //You HAVE to declare this variable in the render function or else your rotation will be crazy inconsistent.
+let cube_Method;
+let leftArm;
+let box;
+
 var render_list = []; //for animation function //use global lists to manage special animations, time, angle can be function parameters
+
+var canvas;
 
 function setupWebGL() {
   // Retrieve <canvas> element
   canvas = document.getElementById('webgl');
+  console.log(canvas)
   // Get the rendering context for WebGL
   gl = getWebGLContext(canvas);
+  console.log(gl)
   gl.enable(gl.DEPTH_TEST);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
@@ -64,7 +78,10 @@ function setupWebGL() {
   }
 }
 
+
 function connectVariablesToGLSL() {
+
+  
   if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
     return;
@@ -181,12 +198,6 @@ function addActionsforHTMLUI() {
   })
 }
 
-
-let globalRotateMatrix = new Matrix4(); //You HAVE to declare this variable in the render function or else your rotation will be crazy inconsistent.
-let cube_Method;
-let leftArm;
-let box;
-
 function initAnimal(){
   cube_Method = new Cube(
     color = [1.0, 0.0, 0.0, 1.0]
@@ -199,6 +210,20 @@ function initAnimal(){
   box = new Cube(
     color = [1.0, 0.0, 1.0, 1.0]
   );
+  leg = new Limb([0,1,0,1])
+  leg2 = new Limb([0,1,0,1])
+  limb = new Limb([0,1,0,1])
+  limb2 = new Limb([0,1,0,1])
+  
+  // //render limbs
+  // //  leg
+  // leg.setUpLimb()
+  // //  leg2
+  // leg2.setUpLimb()
+  // //  limb2
+  // limb2.setUpLimb()
+  // //  limb
+  // limb.setUpLimb()
 }
 
 function renderScene() {
@@ -213,34 +238,82 @@ function renderScene() {
   globalRotateMatrix.rotate(radiansZ, 0, 0, 1);
   
   gl.uniformMatrix4fv(u_globalRotateMatrix, false, globalRotateMatrix.elements);
-  //FIRST CUBE
+
+  limb2.setUpLimb()
+
+  updateAnimationAngles(g_seconds, limb2.arm, yellow_rot);
+  limb2.arm.render()
+
+  updateAnimationAngles(g_seconds, limb2.hand, pink_rot);
+  limb2.hand.render()
+
+  //arm
+  // Remember, the matrix of each part of a limb is dependent on the part before it
+//there I've already made an improvement :) // yea!
+
+// you should have a funciton like updateAnimationAngles in your limb class
+// you should also keep the matrices of the joints in there
+// as well as the angles
+// that way, you can easily modify them in the main file
+//I am already doing that :(
+// are you sure? here lemme give you a template of what i mean
 
 
-  cube_Method.matrix.setIdentity();
-  cube_Method.matrix.translate(0.0, -.75, 0.0); 
-  cube_Method.matrix.rotate(-5, 1, 0, 0)
-  cube_Method.matrix.scale(.5, .3, .5);
+  // a hand's matrix depends on the 
+  //fo re arm, the fore arm depends on the upper arm, and the upper arm depends on the shoulder
+  // it is fine to allocate memory here (you might just need to, either that or you create your arm matrices
+  // as members of the class)
+
+  // so don't set identity... wait but you need to know what matrices they are all dependent on
+  // limb2.arm.matrix.setIdentity();  //i think this one is fine... cuz im not sure what the matrices should start out with. 
+  //they are set up in a separate function so I think setting the identity was a mistake  // but every time render scene is called, they need to be reset...a
+  //oh
+  //
+  // refer to the video tutorial, or back track if you need to
+
+    //sdnepe
+  //my current problem is that my joint rotator isn't doing it right
+  //my current problem is that my joint rotator isn't doing it right
+  //my current problem is that my joint rotator isn't doing it right
+  //my current problem is that my joint rotator isn't doing it right
+  //my current problem is that my joint rotator isn't doing it right
+  //var arm_mat = new Matrix4(limb2.arm.matrix);
+  //arrian my arm isn't rendering
   
-  cube_Method.render();
+  
   
   //ARM1
 
-  leftArm.matrix.setIdentity();
-  leftArm.matrix.translate(0, -.5, 0.0); 
-  leftArm.matrix.rotate(-5, 1, 0, 0);
+  // leftArm.matrix.setIdentity();
+  // leftArm.matrix.translate(0, -.5, 0.0); 
+  // leftArm.matrix.rotate(-5, 1, 0, 0);
+  
+  //  limb2
+  //limb2.renderLimb()
+  //updateAnimationAngles(g_seconds, limb2.arm, yellow_rot)
+  // updateAnimationAngles(g_seconds, leftArm, yellow_rot);
+  // var arm_mat = new Matrix4(leftArm.matrix);
+  // leftArm.matrix.scale(0.25, .7, .5);
+  // leftArm.matrix.translate(0.0, 0.25, 0);
+  // leftArm.render();
+  // //hand
+  // box.matrix.set(arm_mat);
+  // box.matrix.translate(0, .65, 0); 
+  // box.matrix.scale(.3, .3, .3); 
+  // box.matrix.translate(0.0, 0, .001);
+  // updateAnimationAngles(g_seconds, box, pink_rot);
+  // box.render()
 
-  updateAnimationAngles(g_seconds, leftArm, yellow_rot);
-  var arm_mat = new Matrix4(leftArm.matrix);
-  leftArm.matrix.scale(0.25, .7, .5);
-  leftArm.matrix.translate(0.0, 0.25, 0);
-  leftArm.render();
-  //hand
-  box.matrix.set(arm_mat);
-  box.matrix.translate(0, .65, 0); 
-  box.matrix.scale(.3, .3, .3); 
-  box.matrix.translate(0.0, 0, .001);
-  updateAnimationAngles(g_seconds, box, pink_rot);
-  box.render()
+  //arm2
+  
+  //render limbs
+  //  leg
+  //leg.renderLimb()
+  //  leg2
+  //leg2.renderLimb()
+  //  limb
+  //limb.renderLimb()
+  
 }
 
 let frames_rendered = 0;
@@ -248,6 +321,7 @@ function tick() {
   g_seconds = (performance.now() / 1000) - (g_startTime)
   renderScene()
   requestAnimationFrame(tick);
+
 
   let duration = performance.now() - start_time;
   frames_rendered += 1;
@@ -277,9 +351,16 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   initAnimal();
-  var limb = new limb([1, 0, 0, 1])
   renderScene();
-  requestAnimationFrame(tick);
+  requestAnimationFrame(tick);  
+  
+ if (canvas.ev == 1) {
+    var preserveDrawingBuffer = true
+    gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
+    click()
+  }
+  canvas.onmousedown = click;
+  canvas.onmousemove = function(ev) {if(ev.buttons==1) {click(ev)}}
 }
 
 
@@ -290,4 +371,36 @@ function sendTextToHTML(text, htmlID){
     return;
   }
   htmllm.innerHTML = text;
+}
+function click(ev) {
+  //console.log(canvas.width);
+  //console.log(width);
+  var width = 400
+  var height = 400
+  var rect = ev.target.getBoundingClientRect();  
+  var x = ev.clientX; // x coordinate of a mouse pointer
+  var y = ev.clientY; // y coordinate of a mouse pointer
+  // //var z = ev.clientZ; // z coord?
+  x = ((x - rect.left) - width / 2)/(width / 2);
+  y = (height / 2 - (y - rect.top))/(height / 2);
+  radiansX =  x * 360;
+  radiansY =  y * 360;
+  console.log("Radians X:", radiansX, "\nRadians Y: ", radiansY);
+  
+  console.log("x:", x, "\ny: ", y);
+  //renderScene()
+  // if (choose_shape == 1) {
+  //   tri_type = document.getElementById("tri_type").value
+  //   console.log("Tri_type outside", tri_type)
+  //   point = new Triangle(color=color_storage.slice(),size=selected_Size,position=[x, y],vertices=[],tri_type)
+  // } else if (choose_shape == 0){
+  //   point = new Point(color_storage.slice(), selected_Size, [x, y])
+  // } else {
+  //   point = new Circle(color=color_storage.slice(), size=selected_Size, position=[x, y], segments)
+  //   // draw Circle
+  // }
+  //g_shapes_list.push(point)
+  //console.log(point)
+  renderScene()
+  
 }
