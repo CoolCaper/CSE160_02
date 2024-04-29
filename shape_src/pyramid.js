@@ -9,9 +9,9 @@ class Pyramid {
       this.matrix = new Matrix4()
       this.drawMatrix = new Matrix4()
       //this.face1 = new TriFace(color=[0, 0, 1, 1], vertices=[0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.5, 0.0, 0.0]);
-      this.face2 = new TriFace([1, 0, 1, 1]);
-      this.face3 = new TriFace([0, 1, 1, 1]);
-      this.face4 = new TriFace([1, 1, 0, 1]);
+    //   this.face2 = new TriFace([1, 0, 1, 1]);
+    //   this.face3 = new TriFace([0, 1, 1, 1]);
+    //   this.face4 = new TriFace([1, 1, 0, 1]);
     }
 
     initVertexArray(){
