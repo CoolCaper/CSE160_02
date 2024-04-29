@@ -76,8 +76,8 @@ var render_list = []; //for animation function //use global lists to manage spec
 
 var canvas;
 
-var sphere = new Sphere([1, 0, 0, 1], [0, 0])
-console.log(sphere)
+//var sphere = new Sphere([1, 0, 0, 1], [0, 0])
+//console.log(sphere)
 
 function setupWebGL() {
   // Retrieve <canvas> element
