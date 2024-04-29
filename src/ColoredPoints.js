@@ -44,7 +44,17 @@ let leg2;
 let limb;
 let limb2
 
-
+//let pyr; // can you share the server
+//it is shared 
+//as 't'
+//sorry I'm tired LOL
+//the
+// are you hosting the javascript
+//the server is running 
+// make sure you are running on 5500
+//I am
+// .. it works now
+let pyramid;
 
 var start_time;
 var g_startTime;
@@ -59,10 +69,15 @@ let globalRotateMatrix = new Matrix4(); //You HAVE to declare this variable in t
 let cube_Method;
 let leftArm;
 let box;
+var torso;
 
+let pyr;
 var render_list = []; //for animation function //use global lists to manage special animations, time, angle can be function parameters
 
 var canvas;
+
+var sphere = new Sphere([1, 0, 0, 1], [0, 0])
+console.log(sphere)
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -198,18 +213,18 @@ function addActionsforHTMLUI() {
   })
 }
 
-function initAnimal(){
-  cube_Method = new Cube(
-    color = [1.0, 0.0, 0.0, 1.0]
-  );
+function initAnimal() {
+//   cube_Method = new Cube(
+//     color = [1.0, 0.0, 0.0, 1.0]
+//   );
 
-  leftArm = new Cube(
-    color = [1.0, 1.0, 0.0, 1.0]
-  );
+//   leftArm = new Cube(
+//     color = [1.0, 1.0, 0.0, 1.0]
+//   );
 
-  box = new Cube(
-    color = [1.0, 0.0, 1.0, 1.0]
-  );
+//   box = new Cube(
+//     color = [1.0, 0.0, 1.0, 1.0]
+//   );
   leg = new Limb([0,1,0,1])
   leg2 = new Limb([0,1,0,1])
   limb = new Limb([0,1,0,1])
@@ -224,6 +239,40 @@ function initAnimal(){
   // limb2.setUpLimb()
   // //  limb
   // limb.setUpLimb()
+  
+  limb.setUpLimb()
+  limb.scaleAll(.5, .5, .5)
+  limb.shoulder.matrix.translate(1.5, 0, 0)
+  limb.arm.matrix.translate(3, 0, 0)
+  limb.hand.matrix.translate(2.5, 0, 0)
+  limb2.setUpLimb()
+  limb2.scaleAll(.5, .5, .5)
+  leg.setUpLimb()
+  leg.shoulder.matrix.translate(0, -1, 0)
+  leg.arm.matrix.translate(0, -1, 0)
+  leg.hand.matrix.translate(0, -3.75, 0)
+  leg.scaleAll(.5, .5, .5)
+  leg.shoulder.matrix.scale(.65, 1, 1)
+  leg2.setUpLimb()
+  leg2.shoulder.matrix.translate(.75, 0, 0)
+  leg2.arm.matrix.translate(1.5, 0, 0)
+  leg2.hand.matrix.translate(1.25, 0, 0)
+
+  
+  leg2.shoulder.matrix.translate(0, -1, 0)
+  leg2.arm.matrix.translate(0, -1, 0)
+  leg2.hand.matrix.translate(0, -3.75, 0)
+  leg2.scaleAll(.5, .5, .5)
+  leg2.shoulder.matrix.scale(.65, 1, 1)
+  torso = new Cube([0, 1, 0, 1])
+  torso.matrix.translate(.2, .1, 0)
+  torso.matrix.scale(.35, .8, .25)
+  //limb2.setUpLimb()
+  pyr = new Pyramid([1, 0, 0, 1])
+  pyr.matrix.translate(0.2, 0.7,0.0)
+  pyr.matrix.scale(.5, .5, .5)
+  
+//yep!
 }
 
 function renderScene() {
@@ -238,15 +287,159 @@ function renderScene() {
   globalRotateMatrix.rotate(radiansZ, 0, 0, 1);
   
   gl.uniformMatrix4fv(u_globalRotateMatrix, false, globalRotateMatrix.elements);
-
-  limb2.setUpLimb()
+  limb2.renderLimb()
+  limb.renderLimb()
+  limb2.renderLimb()
+  leg.renderLimb()
+  leg2.renderLimb()
+  torso.render()
+  pyr.render()
+  //limb.scaleAll(3, 3, 3)
+  //pyramid
+  // var red1 = new Pyramid([0, 1, 0, 1])  
+  // red1.matrix.scale(.5, .5, .5)
+  // red1.matrix.rotate(90, 1, 0, 0)
+  // red1.matrix.translate(0, 3, 0)
+  // red1.drawFace()
+  // var blue = new Pyramid([0, 1, 0, 1])
+  // blue.matrix.rotate(-90, 0, 1, 0)
+  // blue.matrix.rotate(-90, 0, 1, 0);   
+  // blue.matrix.scale(.5, .5, .5);
+  // blue.matrix.rotate(90, 0, 1, 0);  
+  // var blue_matrix = new Matrix4(blue.matrix)
+  // blue.matrix.rotate(-30, 1, 0, 0);  
+  // blue.matrix.translate(0, 3, 0)
+  // blue.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  // var pink = new Pyramid([0, 1, 0, 1])
+  // pink.matrix.set(blue_matrix);
+  // pink.matrix.rotate(90, 0, 1, 0);
+  // var pink_mat = new Matrix4(pink.matrix)
+  // pink.matrix.rotate(30, 1, 0, 0)
+  // pink.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  // var yellow = new Pyramid([0, 1, 0, 1])
+  // yellow.matrix.set(pink_mat)
+  // yellow.matrix.rotate(90, 0, 1, 0)
+  // yellow.matrix.translate(3, 0, 1)
+  // yellow.matrix.rotate(-30, 1, 0, 0)
+  // yellow.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  // var green = new Pyramid([0, 1, 0, 1])
+  // green.matrix.set(pink_mat)
+  // green.matrix.translate(0, 0, 1)
+  // green.matrix.rotate(-30, 1, 0, 0)
+  // green.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  
 
   updateAnimationAngles(g_seconds, limb2.arm, yellow_rot);
-  limb2.arm.render()
+
+  //limb2.arm.render()
 
   updateAnimationAngles(g_seconds, limb2.hand, pink_rot);
-  limb2.hand.render()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // //pyramid
+  // var red1 = new Pyramid([0, 1, 0, 1])  
+  // red1.matrix.scale(.5, .5, .5)
+  // red1.matrix.rotate(90, 1, 0, 0)
+  // red1.drawFace()
+  // var blue = new Pyramid([0, 1, 0, 1])
+  // blue.matrix.rotate(-90, 0, 1, 0)
+  // blue.matrix.rotate(-90, 0, 1, 0);   
+  // blue.matrix.scale(.5, .5, .5);
+  // blue.matrix.rotate(90, 0, 1, 0);  
+  // var blue_matrix = new Matrix4(blue.matrix)
+  // blue.matrix.rotate(-30, 1, 0, 0);  
+  // blue.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  // var pink = new Pyramid([0, 1, 0, 1])
+  // pink.matrix.set(blue_matrix);
+  // pink.matrix.rotate(90, 0, 1, 0);
+  // var pink_mat = new Matrix4(pink.matrix)
+  // pink.matrix.rotate(30, 1, 0, 0)
+  // pink.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  // var yellow = new Pyramid([0, 1, 0, 1])
+  // yellow.matrix.set(pink_mat)
+  // yellow.matrix.rotate(90, 0, 1, 0)
+  // yellow.matrix.translate(-1, 0, 1)
+  // yellow.matrix.rotate(-30, 1, 0, 0)
+  // yellow.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  // var green = new Pyramid([0, 1, 0, 1])
+  // green.matrix.set(pink_mat)
+  // green.matrix.translate(0, 0, 1)
+  // green.matrix.rotate(-30, 1, 0, 0)
+  // green.drawTriangleIn3D([
+  //   0.0, 0.0, 0.0, 
+  //   .5, 1.0, 0.0,
+  //   1.0, 0.0, 0.0]);
+  
+
+  // green = new Pyramid([1, 0, 0, 1])
+  // pyr.matrix.scale(.5, .5, .5)
+  // pyr.render()
+  //limb2.hand.render()
+  //sphere.render()
   //arm
   // Remember, the matrix of each part of a limb is dependent on the part before it
 //there I've already made an improvement :) // yea!
@@ -313,6 +506,7 @@ function renderScene() {
   //leg2.renderLimb()
   //  limb
   //limb.renderLimb()
+  
   
 }
 
@@ -383,11 +577,11 @@ function click(ev) {
   // //var z = ev.clientZ; // z coord?
   x = ((x - rect.left) - width / 2)/(width / 2);
   y = (height / 2 - (y - rect.top))/(height / 2);
-  radiansX =  x * 360;
-  radiansY =  y * 360;
-  console.log("Radians X:", radiansX, "\nRadians Y: ", radiansY);
+  radiansX =  y * 360;
+  radiansY =  x * 360;
+  //console.log("Radians X:", radiansX, "\nRadians Y: ", radiansY);
   
-  console.log("x:", x, "\ny: ", y);
+  //console.log("x:", x, "\ny: ", y);
   //renderScene()
   // if (choose_shape == 1) {
   //   tri_type = document.getElementById("tri_type").value
